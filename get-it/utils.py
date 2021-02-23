@@ -5,10 +5,10 @@ def extract_route(string):
     return string
 
 def read_file(path):
-    ext=path.suffix
-    if ext == '.txt' or ext == '.html' or ext == '.css' or ext == '.js':
-        file=open(str(path), "t")
+    extension=path.suffix
+    if extension == '.txt' or extension == '.html' or extension == '.css' or extension == '.js':
+        file=open(path, "t")
         return str(file)
     else:
-        file=open(str(path), "b")
+        file=open(path, "rb")
         return bytes(file)
