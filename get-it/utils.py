@@ -7,8 +7,8 @@ def extract_route(string):
 def read_file(path):
     extension=path.suffix
     if extension == '.txt' or extension == '.html' or extension == '.css' or extension == '.js':
-        file=open(path, "t")
-        return str(file)
+        with open(path, 't') as file:
+            return file.read()
     else:
-        file=open(path, "rb")
-        return bytes(file)
+        with open(path, 'rb') as file:
+            return file.read()
