@@ -1,5 +1,6 @@
 from utils import load_data, load_template
 from urllib.parse import unquote_plus
+from utils import has_directory, build_response
 import json
 
 def str_cleanup(request):
@@ -10,10 +11,10 @@ def str_cleanup(request):
         return unquote_plus(anot[-1]), unquote_plus(anot[-2])
     
 def write_json(data, filename):
-    path="./data/"+filename
-    with open(path,'w') as f:
-        data=(json.load(f)).append(data)
-        json.dump(data, f, ensure_ascii=False, indent=4) 
+    path=has_directory(filename, 'data')
+    with open(path,'w', encoding ='utf8') as file:
+        data=(json.load(file)).append(data)
+        json.dump(data, file, ensure_ascii=False, indent=4) 
 
 def index(request):
     if request.startswith('GET'):
@@ -25,7 +26,7 @@ def index(request):
             for dados in load_data('notes.json')
         ]
         notes = '\n'.join(notes_li)
-        return load_template('index.html').format(notes=notes).encode()
+        return build_response(load_template('login.html'))
     
     elif request.startswith('POST'):
         request = request.replace('\r', '')  # Remove caracteres indesejados
@@ -42,4 +43,7 @@ def index(request):
             key=append(chave_valor.split('=')[0])
             value=append(chave_valor.split('=')[1])
             params[key]=value
+        
+        write_json(params)
+        return build_response(code=303, reason='See Other', headers='Location: /')
             
