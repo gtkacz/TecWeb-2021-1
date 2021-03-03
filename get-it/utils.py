@@ -26,3 +26,5 @@ def load_data(path):
 def load_template(name):
     path=Path('./templates/'+name)
     return read_file(path)
+
+def build_response(body='', code=200, reason='OK', headers=''):
