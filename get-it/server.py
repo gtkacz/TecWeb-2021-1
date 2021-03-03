@@ -33,7 +33,7 @@ while True:
     elif route == '':
         response = index(request)
     else:
-        response = bytes()
+        response = build_response(body='404\nPage Not Found', code=404, reason='Not Found')
         
     client_connection.sendall(response)
 
