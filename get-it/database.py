@@ -1,5 +1,5 @@
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 @dataclass
@@ -22,29 +22,33 @@ class Database:
     def __init__(self, DB_NAME):
         self.DB_NAME=DB_PATH(DB_NAME)
         self.conn=sqlite3.connect(self.DB_NAME)
-        self.action="CREATE TABLE IF NOT EXISTS dados_pessoais (nome_da_rua TEXT NOT NULL, cpf TEXT NOT NULL UNIQUE, identificador INTEGER PRIMARY KEY);"
-        self.conn.execute(self.action)
+        self.TABLE_NAME="note"
+        self.create=f'CREATE TABLE IF NOT EXISTS {self.TABLE_NAME} (id TEXT NOT NULL, title TEXT NOT NULL UNIQUE, content INTEGER PRIMARY KEY);'
+        self.conn.execute(self.create)
         self.conn.commit()
         
     def add(self, note):
-        self.notation = f"INSERT INTO note (title, content) VALUES ('{note.title}','{note.content}');"
-        self.conn.execute(self.notation)
+        self.ADD_ACTION = f'INSERT INTO {self.TABLE_NAME} (title, content) VALUES ({note.title},{note.content});'
+        self.conn.execute(self.ADD_ACTION)
         self.conn.commit()
-
-    def get_all(self,):
-        self.cursor = self.conn.execute("SELECT id, title, content FROM note")
-        self.note_list = []
-        for linha in self.cursor:
-            note_obj = Note(linha[0], linha[1], linha[2])
-            self.note_list.append(note_obj)
-        return self.note_list
-
+        
+    def get_all(self):
+        self.select="SELECT id, title, content FROM note"
+        self.cursor = conn.execute(self.select)
+        self.READ_NOTE=[]
+        for row in self.cursor:
+            self.READ_NOTE.append(Note(row[0], row[1], row[2]))
+        return self.READ_NOTE
+    
     def update(self, entry):
-        string_edition = f"UPDATE note SET title = '{entry.title}', content = '{entry.content}' WHERE id = {entry.id};"
-        self.cursor = self.conn.execute(string_edition)
-        self.conn.commit()
-
+        if (entry.id is not None) and (entry.content is not None) and (entry.title is not None):
+            self.UPDATE_ACTION=f"UPDATE {self.TABLE_NAME} SET title = {entry.title}, content = {entry.content} WHERE id = {entry.id}"
+            self.conn.execute(self.UPDATE_ACTION)
+            self.conn.commit()
+        else:
+            raise TypeError("Function can't receive NoneType as argument.")
+        
     def delete(self, note_id):
-        delete_command = f"DELETE FROM note WHERE id = {note_id};"
-        self.cursor = self.conn.execute(delete_command)
+        self.DELETE_ACTION=f"DELETE FROM {self.TABLE_NAME} WHERE {note_id};"
+        self.conn.execute(self.DELETE_ACTION)
         self.conn.commit()

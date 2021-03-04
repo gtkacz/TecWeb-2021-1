@@ -13,7 +13,8 @@ def is_path(subject):
 def read_file(path):
     path=is_path(path)
     extension=path.suffix
-    if extension == '.txt' or extension == '.html' or extension == '.css' or extension == '.js':
+    target=['.txt', '.html', '.css', '.js']
+    if extension in target:
         with open(path, 'rt') as file:
             data=file.read()
         return data
