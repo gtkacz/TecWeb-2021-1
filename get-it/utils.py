@@ -30,7 +30,7 @@ def has_directory(string, directory):
     if c>1:
         return string
     else:
-        return Path('./{0}/{1}'.format(directory, string))
+        return Path(f'./{directory}/{string}')
 
 def load_data(path):
     path=has_directory(path, 'data')

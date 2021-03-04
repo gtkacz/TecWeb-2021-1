@@ -22,9 +22,8 @@ class Database:
     def __init__(self, DB_NAME):
         self.DB_NAME=DB_PATH(DB_NAME)
         self.conn=sqlite3.connect(self.DB_NAME)
-        "CREATE TABLE IF NOT EXISTS dados_pessoais (nome_da_rua TEXT NOT NULL, cpf TEXT NOT NULL UNIQUE, identificador INTEGER PRIMARY KEY);"
-        "INSERT INTO dados_pessoais (nome_da_rua,cpf) VALUES ('R. Quatá','123.456.789-00');"
-        self.conn.execute()
+        self.action="CREATE TABLE IF NOT EXISTS dados_pessoais (nome_da_rua TEXT NOT NULL, cpf TEXT NOT NULL UNIQUE, identificador INTEGER PRIMARY KEY);"
+        self.conn.execute(self.action)
         self.conn.commit()
         
     def add(self, note):

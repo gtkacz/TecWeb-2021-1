@@ -12,7 +12,7 @@ def str_cleanup(request):
     
 def write_json(data, filename):
     path=has_directory(filename, 'data')
-    with open(path,'w', encoding ='utf8') as file:
+    with open(path,'r+', encoding ='utf8') as file:
         data=(json.load(file)).append(data)
         json.dump(data, file, ensure_ascii=False, indent=4) 
 
@@ -26,7 +26,7 @@ def index(request):
             for dados in load_data('notes.json')
         ]
         notes = '\n'.join(notes_li)
-        return build_response(load_template('login.html'))
+        return build_response() + load_template('index.html').format(notes=notes).encode()
     
     elif request.startswith('POST'):
         request = request.replace('\r', '')  # Remove caracteres indesejados
@@ -40,8 +40,8 @@ def index(request):
         # requisição e devolve os parâmetros para desacoplar esta lógica.
         # Dica: use o método split da string e a função unquote_plus
         for chave_valor in corpo.split('&'):
-            key=append(chave_valor.split('=')[0])
-            value=append(chave_valor.split('=')[1])
+            key=chave_valor.split('=')[0]
+            value=chave_valor.split('=')[1]
             params[key]=value
         
         write_json(params)
