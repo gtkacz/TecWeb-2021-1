@@ -15,7 +15,7 @@ def read_file(path):
     extension=path.suffix
     target=['.txt', '.html', '.css', '.js']
     if extension in target:
-        with open(path, 'rt') as file:
+        with open(path, 'rt', encoding='utf-8') as file:
             data=file.read()
         return data
     else:
@@ -35,7 +35,7 @@ def has_directory(string, directory):
 
 def load_data(path):
     path=has_directory(path, 'data')
-    with open(path) as file: 
+    with open(path, encoding='utf-8') as file: 
         data=json.load(file)
     return data
 
@@ -50,4 +50,4 @@ def build_response(body='', code=200, reason='OK', headers=''):
         response += '\n\n' + body
     else:
         response += '\n' + headers + '\n\n' + body
-    return response.encode()
+    return response.encode(encoding='UTF-8')

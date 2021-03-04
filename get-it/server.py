@@ -23,7 +23,7 @@ print(f'Servidor escutando em (ctrl+click): http://localhost:{SERVER_PORT}')
 while True:
     client_connection, client_address = server_socket.accept()
 
-    request = client_connection.recv(1024).decode()
+    request = client_connection.recv(1024).decode(encoding='utf-8')
     print(request)
 
     route = extract_route(request)

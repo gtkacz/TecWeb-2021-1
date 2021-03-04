@@ -3,16 +3,20 @@ from urllib.parse import unquote_plus
 from utils import has_directory, build_response
 import json
 
-def str_cleanup(request):
-        request = request.replace('\r', '')
-        partes = request.split('\n\n')
-        corpo = partes[1]
-        anot=corpo.split('&')
-        return unquote_plus(anot[-1]), unquote_plus(anot[-2])
+def request_params(request):
+    request = request.replace('\r', '')
+    partes = request.split('\n\n')
+    corpo = partes[1]
+    params = {}
+    for valor in corpo.split('&'):
+        key=unquote_plus(valor.split('=')[0])
+        value=unquote_plus(valor.split('=')[1])
+        params[key]=value
+    return params
     
 def write_json(data, filename):
     path=has_directory(filename, 'data')
-    with open(path,'r+', encoding ='utf8') as file:
+    with open(path,'r+', encoding ='utf-8') as file:
         data=(json.load(file)).append(data)
         json.dump(data, file, ensure_ascii=False, indent=4) 
 
@@ -26,23 +30,10 @@ def index(request):
             for dados in load_data('notes.json')
         ]
         notes = '\n'.join(notes_li)
-        return build_response() + load_template('index.html').format(notes=notes).encode()
+        return build_response() + load_template('index.html').format(notes=notes).encode(encoding='utf-8')
     
     elif request.startswith('POST'):
-        request = request.replace('\r', '')  # Remove caracteres indesejados
-        # Cabeçalho e corpo estão sempre separados por duas quebras de linha
-        partes = request.split('\n\n')
-        corpo = partes[1]
-        params = {}
-        # Preencha o dicionário params com as informações do corpo da requisição
-        # O dicionário conterá dois valores, o título e a descrição.
-        # Posteriormente pode ser interessante criar uma função que recebe a
-        # requisição e devolve os parâmetros para desacoplar esta lógica.
-        # Dica: use o método split da string e a função unquote_plus
-        for chave_valor in corpo.split('&'):
-            key=chave_valor.split('=')[0]
-            value=chave_valor.split('=')[1]
-            params[key]=value
+        params = request_params(request)
         
         write_json(params)
         return build_response(code=303, reason='See Other', headers='Location: /')
