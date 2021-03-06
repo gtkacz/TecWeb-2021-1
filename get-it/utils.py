@@ -1,8 +1,12 @@
 from pathlib import Path
 import json
 
-def extract_route(string):
-    return string.split()[1][1:]
+
+def extract_route(request):
+    if request.startswith('GET'):
+        return request.split()[1][1:]
+    elif request.startswith('POST'):
+        pass        
 
 def is_path(subject):
     if not type(subject) is Path:
@@ -17,7 +21,7 @@ def read_file(path):
     if extension in target:
         with open(path, 'rt', encoding='utf-8') as file:
             data=file.read()
-        return data
+        return (data).encode()
     else:
         with open(path, 'rb') as file:
             data=file.read()
@@ -41,7 +45,7 @@ def load_data(path):
 
 def load_template(name):
     path=has_directory(name, 'templates')
-    return read_file(path)
+    return (read_file(path)).decode(encoding='utf-8')
 
 def build_response(body='', code=200, reason='OK', headers=''):
     args = [str(code), reason]
