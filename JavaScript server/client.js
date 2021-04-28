@@ -11,21 +11,21 @@ async function getToken(){
   return accessToken
 }
 
-async function getExercises(accessToken){
+async function getEntries(accessToken, slug){
   const options = {headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${accessToken}`}};
 
-  const exercise = await axios.get('https://tecweb-js.insper-comp.com.br/exercicio', options).then((response) => {return(response.data)});
+  const entries = await axios.get('https://tecweb-js.insper-comp.com.br/exercicio', options).then((response) => {return(response.data[slug].entrada)});
 
-  return exercise
+  return entries
 }
 
-async function get(slug){
-  const accessToken = await getToken();
-  console.log(`Access token: ${accessToken}`);
+// async function get(slug){
+//   const accessToken = await getToken();
+//   console.log(`Access token: ${accessToken}`);
 
-  const exercise = await getExercises(accessToken)
-  console.log(exercise);
-}
+//   const exercise = await getExercises(accessToken, slug)
+//   console.log(exercise);
+// }
 
 async function post(accessToken, slug, resp){
   const options = {headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${accessToken}`}};
@@ -36,15 +36,15 @@ async function post(accessToken, slug, resp){
 }
 
 async function soma(a, b){
-  return ['soma', a+b];
+  return a+b;
 }
 
 async function tamanhostring(string){
-  return ['tamanho-string', string.length];
+  return string.length;
 }
 
 async function nomedousuario(string){
-  return ['nome-do-usuario', string.slice(0, string.indexOf('@'))];
+  return string.slice(0, string.indexOf('@'));
 }
 
 async function jacawars(v, theta, g=9.8, d=100, r=2){
@@ -135,7 +135,7 @@ async function maiorprefixocomum(string){
   return ['maior-prefixo-comum', resp]
 }
 
-async function somapipipi(array){
+async function somasegundomaioremenornumeros(array){
   const menor = Math.min.apply(Math, array)
   const max = Math.max.apply(null, array);
   arr.splice(arr.indexOf(max), 1);
@@ -144,4 +144,26 @@ async function somapipipi(array){
   return ['soma-segundo-maior-e-menor-numeros', resp]
 }
 
-get()
+async function main(){
+  const accessToken = await getToken().then((response) => {return(response)});;
+  console.log(`Access token: ${accessToken}`);
+
+  const dict = [{slug: 'soma', funcao: soma}, {slug: 'tamanho-string', funcao: tamanhostring}, {slug: 'nome-do-usuario', funcao: nomedousuario}]
+  console.log('criou dicionario com funcoes')
+  var answers = []
+
+  for (var i = 0; i < dict.length; i++){
+    var slug = dict[i].slug;
+    var func = dict[i].funcao;
+    var entries = await getEntries(accessToken, slug).then((response) => {return(response)});
+    var resp = func(entries);
+    console.log(`https://tecweb-js.insper-comp.com.br/${slug}`)
+    var bool = await post(accessToken, slug, resp).then((response) => {return(response)});
+    console.log('checou se a resposta esta certa')
+    answers.push({slug: slug, certo: bool})
+  }
+
+  console.log(answers)
+}
+
+main()
